@@ -1,0 +1,87 @@
+/* Estilos globales adicionales para la aplicación */
+
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --card: 240 4.8% 12%; /* Un poco más claro que el fondo */
+    --card-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+
+    --primary: 262.1 83.3% 57.8%; /* Morado brillante */
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --ring: 262.1 83.3% 57.8%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    background-image: radial-gradient(
+      circle at top,
+      hsl(260, 20%, 15%),
+      hsl(var(--background)) 70%
+    );
+    color: hsl(var(--foreground));
+  }
+}
+
+/* Utilidades personalizadas */
+.text-gradient {
+  background: linear-gradient(
+    to right,
+    hsl(262.1 83.3% 57.8%),
+    hsl(280 80% 60%)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.min-h-screen-safe {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Estilos para react-easy-crop */
+.reactEasyCrop_Container {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.reactEasyCrop_CropArea {
+  border: 2px solid rgb(59 130 246) !important;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Loading animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
