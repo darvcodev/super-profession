@@ -1,20 +1,79 @@
-import React from "react";
-import html2canvas from "html2canvas";
+import React, { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import Confetti from "react-confetti";
 import useWindowSize from "../hooks/useWindowSize";
-import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import type { PostcardData } from "../types";
 import { Download, RotateCcw, ArrowLeft } from "lucide-react";
 import { ShareWhatsAppButton } from "./ShareWhatsAppButton";
+import { Card, CardContent } from "./ui/card"; // Mantener Card para el fondo
 
 interface ResultPostcardProps {
   postcard: PostcardData;
   onGenerateNew: () => void;
   isGenerating?: boolean;
-  onBack: () => void; // Añadido para navegación
+  onBack: () => void;
 }
+
+// Función para componer la imagen final estilo Polaroid
+const composePolaroidImage = (
+  imageUrl: string,
+  name: string,
+  description: string
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.crossOrigin = "anonymous";
+    image.src = imageUrl;
+
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return reject(new Error("Canvas context not available"));
+
+      // Dimensiones de la Polaroid (aspect ratio 4:5)
+      const canvasWidth = 800;
+      const canvasHeight = 1000;
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+
+      // Fondo blanco de la Polaroid
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+      // Margen
+      const margin = 40;
+      const innerWidth = canvasWidth - margin * 2;
+      const innerHeight = 700; // Altura fija para la imagen
+
+      // Dibujar la imagen generada
+      ctx.drawImage(image, margin, margin, innerWidth, innerHeight);
+
+      // Área de texto
+      ctx.fillStyle = "black";
+      ctx.textAlign = "center";
+
+      // Dibujar Nombre
+      ctx.font = "bold 64px 'Helvetica', sans-serif";
+      ctx.fillText(name, canvasWidth / 2, innerHeight + margin + 80);
+
+      // Dibujar Descripción
+      ctx.font = "italic 42px 'Georgia', serif";
+      ctx.fillStyle = "#333";
+      ctx.fillText(
+        `"${description}"`,
+        canvasWidth / 2,
+        innerHeight + margin + 160
+      );
+
+      resolve(canvas.toDataURL("image/png"));
+    };
+
+    image.onerror = () => {
+      reject(new Error("Failed to load image for composition"));
+    };
+  });
+};
 
 export function ResultPostcard({
   postcard,
@@ -22,47 +81,44 @@ export function ResultPostcard({
   isGenerating = false,
   onBack,
 }: ResultPostcardProps) {
-  const postcardRef = React.useRef<HTMLDivElement>(null);
   const { width, height } = useWindowSize();
+  const [composedImageUrl, setComposedImageUrl] = useState<string | null>(null);
+  const [compositionError, setCompositionError] = useState<string | null>(null);
 
-  // Descargar como PNG
-  const downloadPNG = async () => {
-    if (!postcardRef.current) return;
+  useEffect(() => {
+    const generateComposedImage = async () => {
+      try {
+        setCompositionError(null);
+        const dataUrl = await composePolaroidImage(
+          postcard.imageUrl,
+          postcard.name,
+          postcard.description
+        );
+        setComposedImageUrl(dataUrl);
+      } catch (error) {
+        console.error("Error composing image:", error);
+        setCompositionError("Hubo un error al crear la imagen final.");
+        // Como fallback, muestra la imagen original de la IA
+        setComposedImageUrl(postcard.imageUrl);
+      }
+    };
 
-    try {
-      // Configuración para alta calidad
-      const canvas = await html2canvas(postcardRef.current, {
-        backgroundColor: "#ffffff",
-        scale: 2, // Mayor resolución
-        useCORS: true,
-        allowTaint: true,
-        height: postcardRef.current.offsetHeight,
-        width: postcardRef.current.offsetWidth,
-      });
-
-      // Convertir a blob y descargar
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `postal-epica-${postcard.name
-              .replace(/\s+/g, "-")
-              .toLowerCase()}-${new Date().getTime()}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-          }
-        },
-        "image/png",
-        1.0
-      );
-    } catch (error) {
-      console.error("Error downloading PNG:", error);
+    if (postcard) {
+      generateComposedImage();
     }
-  };
+  }, [postcard]);
+
+  const downloadPNG = useCallback(() => {
+    if (!composedImageUrl) return;
+    const link = document.createElement("a");
+    link.href = composedImageUrl;
+    link.download = `postal-epica-${postcard.name
+      .replace(/\s+/g, "-")
+      .toLowerCase()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, [composedImageUrl, postcard.name]);
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center space-y-6">
@@ -79,15 +135,15 @@ export function ResultPostcard({
         transition={{ duration: 0.5, delay: 0.2 }}
         className="text-center"
       >
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+        <h2 className="text-3xl font-bold tracking-tight text-foreground">
           ¡Tu Postal Épica está Lista!
         </h2>
         <p className="mt-2 text-lg text-muted-foreground">
-          Comparte tu transformación heroica con el mundo.
+          Descárgala y compártela con el mundo.
         </p>
       </motion.div>
 
-      {/* Postal Principal */}
+      {/* Postal Compuesta */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -99,40 +155,22 @@ export function ResultPostcard({
         }}
         className="w-full max-w-md"
       >
-        <Card
-          ref={postcardRef}
-          className="overflow-hidden bg-white dark:bg-gray-800 shadow-2xl ring-1 ring-purple-500/50"
-          style={{ aspectRatio: "4/5" }} // Formato poster vertical
-        >
-          {/* Imagen épica */}
-          <div className="relative h-3/5 overflow-hidden">
-            <img
-              src={postcard.imageUrl}
-              alt={`Postal épica de ${postcard.name} como ${postcard.profession}`}
-              className="w-full h-full object-cover"
-              style={{ objectPosition: "center center" }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-          </div>
-          <CardContent className="h-2/5 flex flex-col justify-center space-y-4 p-6 relative">
-            <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              {postcard.name}
-            </h1>
-            <p className="text-lg font-semibold text-center text-gray-700 dark:text-gray-300">
-              {postcard.profession}
-            </p>
-            <div className="text-center px-2">
-              <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400 italic">
-                "{postcard.description}"
-              </p>
-            </div>
-            <div className="absolute bottom-2 right-2">
-              <p className="text-xs text-gray-400 dark:text-gray-600">
-                Creado con IA ✨
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        {composedImageUrl ? (
+          <img
+            src={composedImageUrl}
+            alt={`Postal épica final de ${postcard.name}`}
+            className="rounded-lg shadow-2xl w-full"
+          />
+        ) : (
+          <Card className="aspect-[4/5] flex items-center justify-center">
+            <CardContent className="p-6 text-center">
+              <p>Generando tu postal...</p>
+            </CardContent>
+          </Card>
+        )}
+        {compositionError && (
+          <p className="text-red-500 mt-2">{compositionError}</p>
+        )}
       </motion.div>
 
       {/* Acciones */}
@@ -146,7 +184,11 @@ export function ResultPostcard({
           <RotateCcw className="h-4 w-4 mr-2" />
           {isGenerating ? "Generando..." : "Generar Otra"}
         </Button>
-        <Button onClick={downloadPNG} variant="outline">
+        <Button
+          onClick={downloadPNG}
+          variant="outline"
+          disabled={!composedImageUrl}
+        >
           <Download className="h-4 w-4 mr-2" />
           Descargar PNG
         </Button>
@@ -155,6 +197,7 @@ export function ResultPostcard({
           profession={postcard.profession}
           description={postcard.description}
           imageUrl={postcard.imageUrl}
+          disabled={!composedImageUrl}
         />
       </motion.div>
 

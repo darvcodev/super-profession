@@ -1,16 +1,16 @@
 // Tipos principales según las especificaciones del PROMPT.md
 
-export type Profession = 
-  | 'Ingenier@'
-  | 'Abogad@'
-  | 'Médic@'
-  | 'Diseñador/a'
-  | 'Docente'
-  | 'Chef'
-  | 'Arquitect@'
-  | 'Emprendedor/a'
-  | 'Músic@'
-  | 'Personalizada';
+export type Profession =
+  | "Ingeniero"
+  | "Abogado"
+  | "Médico"
+  | "Diseñador"
+  | "Docente"
+  | "Chef"
+  | "Arquitecto"
+  | "Emprendedor"
+  | "Músico"
+  | "Personalizada";
 
 export type GenParams = {
   name: string;
@@ -19,8 +19,8 @@ export type GenParams = {
 };
 
 export type GenResult = {
-  imageUrl: string;     // URL http(s) o data URL
-  description: string;  // 2–3 líneas en español
+  imageUrl: string; // URL http(s) o data URL
+  description: string; // 2–3 líneas en español
 };
 
 export interface ImageTextGenerator {
@@ -46,7 +46,7 @@ export type UserFormData = {
 };
 
 // Estados de la aplicación
-export type AppStep = 'form' | 'photo' | 'result';
+export type AppStep = "form" | "photo" | "result";
 
 // Configuración de profesiones con sus escenarios épicos
 export type ProfessionConfig = {
@@ -56,10 +56,10 @@ export type ProfessionConfig = {
 };
 
 // Tipos para la captura de imagen
-export type ImageCaptureMode = 'camera' | 'upload';
+export type ImageCaptureMode = "camera" | "upload";
 
 // Configuración de la API
-export type ApiProvider = 'openai' | 'stability';
+export type ApiProvider = "openai" | "stability";
 
 export type ApiConfig = {
   provider: ApiProvider;

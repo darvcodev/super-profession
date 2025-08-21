@@ -16,7 +16,7 @@ import type {
   PostcardData,
   GenParams,
 } from "./types";
-import { AlertCircle, Sparkles, Loader2, Rocket } from "lucide-react";
+import { AlertCircle, Sparkles, Loader2 } from "lucide-react";
 
 // Crear cliente de React Query
 const queryClient = new QueryClient({
@@ -141,11 +141,6 @@ function EpicPostcardApp() {
     }
   };
 
-  const handleNext = () => {
-    setAnimationDirection(1);
-    // Lógica para avanzar (ya manejada por cada componente)
-  };
-
   const variants = {
     enter: (direction: number) => ({
       x: direction > 0 ? "100%" : "-100%",
@@ -166,8 +161,10 @@ function EpicPostcardApp() {
       {/* Sidebar con Stepper y branding */}
       <aside className="w-full md:w-1/3 lg:w-1/4 p-8 bg-black/20 border-r border-white/10 flex flex-col">
         <div className="flex items-center gap-3 mb-10">
-          <Rocket className="h-8 w-8 text-primary" />
-          <h1 className="text-2xl font-bold text-gradient">Postal Épica IA</h1>
+          <Sparkles className="h-8 w-8 text-primary" />
+          <h1 className="text-2xl font-bold text-gradient">
+            Super Profession | AI
+          </h1>
         </div>
 
         <Stepper steps={steps} currentStep={currentStep} />

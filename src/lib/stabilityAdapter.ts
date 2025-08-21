@@ -49,7 +49,7 @@ export class StabilityAdapter extends BaseGenerator {
     const formData = new FormData();
     formData.append("init_image", payload.userImage);
     formData.append("init_image_mode", "IMAGE_STRENGTH");
-    formData.append("image_strength", "0.7"); // Conservar características faciales
+    formData.append("image_strength", "0.85"); // Aumentado para conservar más rasgos faciales
     formData.append("text_prompts[0][text]", prompt);
     formData.append("text_prompts[0][weight]", "1");
     formData.append("text_prompts[1][text]", negativePrompt);

@@ -1,59 +1,60 @@
 import type { ProfessionConfig } from "../types";
 
-// Configuración de profesiones con sus escenarios épicos según el PROMPT.md
+// Configuración de profesiones con sus escenarios épicos orientados a roles de empresa
 export const PROFESSION_CONFIGS: ProfessionConfig[] = [
   {
-    value: "Ingenier@",
-    label: "Ingenier@",
+    value: "Líder de Proyectos",
+    label: "Líder de Proyectos",
     scenario:
-      "exoesqueleto tecnológico, hologramas de circuitos, skyline futurista nocturno, iluminación dramática",
+      "orquestando un equipo de hologramas, diagramas de Gantt flotantes, en un centro de comando futurista",
   },
   {
-    value: "Abogad@",
-    label: "Abogad@",
+    value: "Especialista en Marketing",
+    label: "Especialista en Marketing",
     scenario:
-      "capa elegante, balanza de la justicia luminosa, juzgado monumental, columnas clásicas",
+      "creando campañas de luz, con gráficos virales y vallas publicitarias holográficas en una ciber-ciudad",
   },
   {
-    value: "Médic@",
-    label: "Médic@",
+    value: "Analista de Datos",
+    label: "Analista de Datos",
     scenario:
-      "armadura sanitaria luminosa, nanobots de luz, hospital de vanguardia de fondo",
+      "navegando por un mar tridimensional de datos, con insights luminosos y dashboards holográficos",
   },
   {
-    value: "Docente",
-    label: "Docente",
+    value: "Desarrollador de Software",
+    label: "Desarrollador de Software",
     scenario:
-      "toga de sabio, constelaciones de fórmulas, biblioteca infinita resplandeciente",
+      "escribiendo código que se materializa como estructuras de neón, en un entorno de realidad virtual",
   },
   {
-    value: "Chef",
-    label: "Chef",
+    value: "Diseñador UX/UI",
+    label: "Diseñador UX/UI",
     scenario:
-      "chaqueta épica, torbellino de especias, cocina palaciega ardiente",
+      "moldeando interfaces de usuario fluidas en el aire, con paletas de colores flotantes y prototipos interactivos",
   },
   {
-    value: "Arquitect@",
-    label: "Arquitect@",
+    value: "Recursos Humanos",
+    label: "Recursos Humanos",
     scenario:
-      "planos flotantes, rascacielos en construcción, luz cenital cinematográfica",
+      "conectando redes neuronales de talento, en un jardín zen corporativo con árboles de datos",
   },
   {
-    value: "Diseñador/a",
-    label: "Diseñador/a",
+    value: "Finanzas y Contabilidad",
+    label: "Finanzas y Contabilidad",
     scenario:
-      "pinceladas de luz, tipografías flotantes, estudio creativo futurista",
+      "protegiendo una bóveda de datos financieros con escudos de energía, rodeado de gráficos dorados ascendentes",
   },
   {
-    value: "Emprendedor/a",
-    label: "Emprendedor/a",
+    value: "Soporte Técnico",
+    label: "Soporte Técnico",
     scenario:
-      "gráficos ascendentes holográficos, ciudad brillante, energía dinámica",
+      "reparando un núcleo de servidor con herramientas de luz, en una sala de servidores de alta tecnología",
   },
   {
-    value: "Músic@",
-    label: "Músic@",
-    scenario: "ondas sonoras visibles, escenario gigantesco, focos teatrales",
+    value: "Ventas y Comercial",
+    label: "Ventas y Comercial",
+    scenario:
+      "cerrando un trato con un apretón de manos de energía, sobre un mapa holográfico de la ciudad",
   },
   {
     value: "Personalizada",
@@ -68,66 +69,16 @@ export const PROFESSION_CONFIGS: ProfessionConfig[] = [
  */
 export function getProfessionConfig(profession: string): ProfessionConfig {
   const config = PROFESSION_CONFIGS.find((p) => p.value === profession);
-  if (!config) {
-    // Para profesiones personalizadas, crear un escenario genérico
+  if (!config || config.value === "Personalizada") {
+    // Para profesiones personalizadas, usar un escenario genérico pero potente
     return {
       value: profession,
       label: profession,
-      scenario: deduceCustomProfessionScenario(profession),
+      scenario:
+        "entorno majestuoso y poderoso, elementos únicos de grandeza, iluminación épica cinematográfica",
     };
   }
   return config;
-}
-
-/**
- * Deduce un escenario épico para una profesión personalizada
- */
-function deduceCustomProfessionScenario(profession: string): string {
-  const lowerProf = profession.toLowerCase();
-
-  // Mapeos basados en palabras clave
-  const scenarioMappings = [
-    {
-      keywords: ["artista", "pintor", "escultor", "arte"],
-      scenario:
-        "estudio artístico resplandeciente, paleta de colores flotante, obras maestras de fondo",
-    },
-    {
-      keywords: ["programador", "developer", "código", "software"],
-      scenario:
-        "matriz de código digital, servidores luminosos, realidad virtual futurista",
-    },
-    {
-      keywords: ["escritor", "autor", "periodista", "libro"],
-      scenario: "biblioteca cósmica, pergaminos flotantes, pluma de luz dorada",
-    },
-    {
-      keywords: ["científico", "investigador", "laboratorio"],
-      scenario:
-        "laboratorio cuántico, fórmulas luminosas, experimentos cósmicos",
-    },
-    {
-      keywords: ["deportista", "atleta", "deporte"],
-      scenario: "estadio épico, trofeos dorados flotantes, energía de victoria",
-    },
-    {
-      keywords: ["fotografo", "cámara", "imagen"],
-      scenario: "estudio fotográfico místico, lentes mágicas, capturas de luz",
-    },
-    {
-      keywords: ["vendedor", "comercial", "ventas"],
-      scenario: "ciudad comercial dorada, gráficos de éxito, torres de cristal",
-    },
-  ];
-
-  for (const mapping of scenarioMappings) {
-    if (mapping.keywords.some((keyword) => lowerProf.includes(keyword))) {
-      return mapping.scenario;
-    }
-  }
-
-  // Escenario genérico si no se encuentra coincidencia
-  return "entorno majestuoso y poderoso, elementos únicos de grandeza, iluminación épica cinematográfica";
 }
 
 /**
